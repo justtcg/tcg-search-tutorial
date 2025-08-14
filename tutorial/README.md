@@ -2,7 +2,7 @@
 
 #### Tired of clunky, bloated data APIs? Let’s build something better. In the next 10 minutes, you’ll create a lightning-fast TCG search tool with just a few lines of vanilla JavaScript, powered by the JustTCG API.
 
-![](./images/title.png)
+![](../images/title.png)
 
 We’re going to build a simple but powerful search bar that can find any card — from a broad search for “Pikachu” to a hyper-specific query for a “1st Edition Holofoil Base Set Charizard.” The best part? No backend, no complex libraries. Just pure, fast, dedicated TCG data when you need it.
 
@@ -20,7 +20,7 @@ To follow along, you’ll just need a couple of things:
 
 First, let’s create our search interface. We’ll keep the HTML and CSS simple and clean. Create a file named `index.html` and another named `style.css`.
 
-![](./images/card-search-screenshot.png)
+![](../images/card-search-screenshot.png)
 
 **index.html**
 ```html
@@ -110,7 +110,7 @@ function renderResults(cards) {
 ```
 Open `index.html` in your browser, type "Charizard" in the search box, and hit enter. You should see an array of Charizard card data!
 
-![](./images/results-screenshot.png)
+![](../images/results-screenshot.png)
 
 ### ⚠️Heads Up: A Quick Note on API Key Security⚠️
 
@@ -165,7 +165,7 @@ function buildQueryUrl() {
 ```
 Now, if you search for “Charizard” and select “Pokémon” from the dropdown, the generated URL will be `/v1/cards?q=charizard&game=pokemon`. This is how you start to add precision. You can apply this same logic for `set`, `condition`, and more.
 
-![](./images/requests-screenshot.png)
+![](../images/requests-screenshot.png)
 
 ----------
 
