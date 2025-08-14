@@ -1,113 +1,65 @@
-// main.js
-
-// 1. --- CONSTANTS & CONFIGURATION ---
-// Store your API key and the base API endpoint URL here.
-const API_KEY = 'YOUR_API_KEY_HERE'; // Remind user to replace this
+// --- CONSTANTS & CONFIGURATION ---
+// ⚠️ For demo purposes only. Never expose your API key in client-side code in production!
+// In a real application, this key should be on a server and loaded from an environment variable.
+const API_KEY = 'YOUR_API_KEY_HERE';
 const API_BASE_URL = 'https://api.justtcg.com/v1';
 
-// 2. --- DOM ELEMENT REFERENCES ---
-// Get references to all the interactive elements from the HTML.
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
-const gameFilter = document.getElementById('game-filter');
-// ... other filter elements
 const resultsContainer = document.getElementById('results-container');
 
-// 3. --- EVENT LISTENERS ---
-// The primary entry point for our application logic.
-searchForm.addEventListener('submit', handleSearchSubmit);
+searchForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-// 4. --- CORE FUNCTIONS ---
-
-/**
- * Handles the form submission event.
- * @param {Event} event The form submission event.
- */
-async function handleSearchSubmit(event) {
-  event.preventDefault(); // Prevents the page from reloading
-  // Logic to show a loading state...
-  
+  // Let's create a helper to build the URL  
   const queryUrl = buildQueryUrl();
-  
+  if (!queryUrl) return; // Don't search if there's no query  
   try {
-    const cards = await fetchCards(queryUrl);
-    renderResults(cards);
+    const response = await fetch(queryUrl, {
+      headers: { 'x-api-key': API_KEY }
+    });
+    const data = await response.json();
+    renderResults(data.data);
   } catch (error) {
-    renderError(error.message);
+    console.error("Failed to fetch cards:", error);
   }
-  
-  // Logic to hide loading state...
-}
-
-/**
- * Constructs the final API query URL based on form inputs.
- * @returns {string} The complete, encoded URL for the API request.
- */
+});
 function buildQueryUrl() {
   const params = new URLSearchParams();
-  
-  // Add query from text input
+
   if (searchInput.value) {
     params.append('q', searchInput.value);
-  }
-  
-  // Add game from dropdown
-  if (gameFilter.value) {
-    params.append('game', gameFilter.value);
+  } else {
+    return null;
   }
 
-  // ... logic to build the rest of the query string ...
-  
+  const game = document.getElementById('game-filter').value;
+  if (game) {
+    params.append('game', game);
+  }
+
+  // Example for a set input (you would add this to your HTML)  
+  // const set = document.getElementById('set-filter').value;  
+  // if (set) {  
+  //     params.append('set', set);  
+  // }  
+  // Example for multiple conditions from checkboxes  
+  // const conditions = [];  
+  // document.querySelectorAll('input[name="condition"]:checked').forEach(checkbox => {  
+  //     conditions.push(checkbox.value);  
+  // });  
+  // if (conditions.length > 0) {  
+  //     params.append('condition', conditions.join(','));  
+  // }  
+
   return `${API_BASE_URL}/cards?${params.toString()}`;
 }
-
-/**
- * Fetches card data from the JustTCG API.
- * @param {string} url The API endpoint to fetch from.
- * @returns {Promise<Array>} A promise that resolves to an array of card objects.
- */
-async function fetchCards(url) {
-    const response = await fetch(url, {
-        headers: {
-            'x-api-key': API_KEY
-        }
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'An unknown error occurred.');
-    }
-
-    const data = await response.json();
-    return data.data; // Return the array of cards from the response
-}
-
-
-/**
- * Renders the card results to the DOM.
- * @param {Array} cards An array of card objects.
- */
 function renderResults(cards) {
-  resultsContainer.innerHTML = ''; // Clear previous results
-
+  resultsContainer.innerHTML = '';
   if (!cards || cards.length === 0) {
     resultsContainer.innerHTML = '<p>No results found.</p>';
     return;
   }
-  
-  cards.forEach(card => {
-    const cardElement = document.createElement('div');
-    cardElement.className = 'card';
-    // ... logic to create and append the card HTML ...
-    resultsContainer.appendChild(cardElement);
-  });
-}
-
-/**
- * Renders an error message to the DOM.
- * @param {string} message The error message to display.
- */
-function renderError(message) {
-  resultsContainer.innerHTML = ''; // Clear previous results
-  resultsContainer.innerHTML = `<p class="error">Error: ${message}</p>`;
+  // We'll build this out more later  
+  resultsContainer.innerHTML = `<pre>${JSON.stringify(cards, null, 2)}</pre>`;
 }
